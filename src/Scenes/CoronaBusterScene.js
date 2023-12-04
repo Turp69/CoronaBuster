@@ -37,7 +37,7 @@ export default class CoronaBusterScene extends Phaser.Scene{
 
         //Create Moving Clouds
         this.clouds = this.physics.add.group({
-            key: 'cloud',
+            key: 'Cloud',
             repeat: 10,     
         })
 
