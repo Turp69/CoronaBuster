@@ -10,10 +10,13 @@ export default class CoronaBusterScene extends Phaser.Scene{
 
         //Adding Controler
         this.nav_left = false;
-        this.nave_right = false;
+        this.nav_right = false;
         this.shoot = false;
         this.player = undefined;
         this.speed = 100
+        // this.nav_left = false;
+        // this.nav_right = false;
+        // this.nav_shoot = false
     }
 
     //METHOD PRELOAD
@@ -45,6 +48,7 @@ export default class CoronaBusterScene extends Phaser.Scene{
             this.clouds.getChildren(),
             this.physics.world.bounds
         )
+        this.createButton()
     }
     
     //METHOD UPDATE
@@ -63,18 +67,19 @@ export default class CoronaBusterScene extends Phaser.Scene{
         )
     }
 
-    createButtons(){
+    createButton(){
         this.input.addPointer(3)
 
-        let shoot = this.add.image(320,550, 'shoot')
+        let shoot = this.add.image(320,550, 'shootButton')
         .setInteractive().setDepth(0.5).setAlpha(0.8)
 
-        let nav_left = this.add.image(50,550, 'left-btn')
+        let nav_left = this.add.image(50,550, 'leftButton')
         .setInteractive().setDepth(0.5).setAlpha(0.8)
 
-        let nave_right = this.add.image(nav_left.x + nav_left.displayWidth+20, 550, 'right-btn')
+        let nav_right = this.add.image(nav_left.x + nav_left.displayWidth+20, 550, 'rightButton')
         .setInteractive().setDepth(0.5).setAlpha(0.8)
     }
+    
     createPlayer(){
         const player = this.physics.add.sprite(200,450, 'player')
         player.setCollideWorldBounds(true)
