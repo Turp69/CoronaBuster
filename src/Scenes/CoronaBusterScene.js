@@ -83,7 +83,7 @@ export default class CoronaBusterScene extends Phaser.Scene{
     createPlayer(){
         const player = this.physics.add.sprite(200,450, 'player')
         player.setCollideWorldBounds(true)
-        return player
+
         this.player = this.createPlayer()
         this.anims.create({
             key: 'turn',
@@ -103,8 +103,27 @@ export default class CoronaBusterScene extends Phaser.Scene{
                 start: 1, end: 2
             })
         })
-        return player
-    }       
+        return player       
+        this.player = this.createPlayer()}
+        
+        
 }
+
+//METHOD MOVE PLAYER
+movePlayer(Player,'time'){
+    if (this.nav_left){
+        this.player.setVelocityX(this.speed * -1)
+        this.player.anims.play('left', true)
+        this.player.setFlipX(false)
+    } else if (this.nav_right){
+        this.player.setVelocityX(this.speed)
+        this.player.anims.play('right', true)
+        this.player.setFlipX(true)        
+    }else{
+        this.player.setvelocityX(0)
+        this.player.anims.play('turn')
+    }
+}
+
 
 
