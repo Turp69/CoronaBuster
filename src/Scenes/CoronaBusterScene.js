@@ -27,6 +27,11 @@ export default class CoronaBusterScene extends Phaser.Scene{
 
         this.scoreLabel = undefined
         this.score= 0
+
+        this.lifeLabel = undefined
+        this.life = 3
+
+        this.handsanitizer = undefined
     }
 
     //METHOD PRELOAD
@@ -45,7 +50,12 @@ export default class CoronaBusterScene extends Phaser.Scene{
             frameWidth: 16,
             frameHeight: 16,
         })
-0    }
+        this.load.audio('bgsound', 'sfx/AloneAgainst Enemy.ogg')
+        this.load.audio('laser', 'sfx/sfx_laser.ogg')
+        this.load.audio('destroy', 'sfx/destroy.mp3')
+        this.load.audio('life', 'sfx/handsanitizer.mp3')
+        this.load.audio('gameover', 'sfx/gameover.wav')
+    }
 
     //METHOD CREATE
     create(){
@@ -95,7 +105,40 @@ export default class CoronaBusterScene extends Phaser.Scene{
             fill: 'black',
             backgroundColor: 'white'
             }).setDepth(1)
-                
+        this.lifeLabel = this.add.text(10,30,'Life', {
+            fontSize: '16px',
+            fill: 'black',
+            backgroundColor: 'white'
+            }).setDepth(1)
+        this.physics.add.overlap(
+            this.player,
+            this.enemies,
+            this.decreaselife,
+            null,
+            this,
+        )
+        this.replayButton = this.add.image(200, 400, 'replay-button')
+                .setInteractive().setScale(0.5)
+        this.replayButton.once('pointerup', () => {
+            this.scene.start('corona-buster-scene')
+        }, this)  
+        this.handsanitizer = this.physics.add.group({
+            classType: FallingObject,
+            runChildUpdate: true
+            })
+        this.time.addEvent({
+            delay: 10000,
+            callback: this.spawnHandsanitizer,
+            callbackScope: this,
+            loop: true
+        })
+        this.physics.add.overlap(
+            this.player,
+            this.handsanitizer,
+            this.increaseLife,
+            null,
+            this
+        )      
     }
     
     //METHOD UPDATE
@@ -114,6 +157,7 @@ export default class CoronaBusterScene extends Phaser.Scene{
 
         this.movePlayer(this.player, time)
         this.scoreLabel.setText('Score : ' + this.score);
+        this.lifeLabel.setText('Life : ' + this.life);
     }
 
     createButton(){
@@ -172,7 +216,9 @@ export default class CoronaBusterScene extends Phaser.Scene{
                 start: 1, end: 2
             })
         })
-        return player       
+        return player
+        
+
     }
         
 
@@ -196,6 +242,7 @@ export default class CoronaBusterScene extends Phaser.Scene{
             if (laser) {
                 laser.fire(this.player.x, this.player.y)
                 this.lastFired = time + 150
+                this.sound.play('laser')
             }
         }
     }
@@ -216,7 +263,40 @@ export default class CoronaBusterScene extends Phaser.Scene{
         laser.die()
         enemy.die()
         this.score += 10;
-            }
+        this.sound.play('destroy')
     }
-}
 
+    decreaseLife(player, enemy){
+        enemy.die()
+        this.life
+        if(this.life==2){
+            player.setTint(0xff0000)
+        }else if(this.life==1){
+            player.setTint(0xff0000).setAlpha(0.2)
+        }else if(this.life==0){
+            this.scene.start('over-scene', {score:this.score})
+        }
+    }
+    spawnHandsanitizer() {
+        const config = {
+        speed: 60,
+        rotation: 0
+        }
+        // @ts-ignore
+        const handsanitizer = this.handsanitizer.get
+        (0, 0, 'handsanitizer', config)
+        const positionX = Phaser.Math.Between(70, 330)
+        if (handsanitizer) {
+            handsanitizer.spawn(positionX)
+        }
+    }
+    increaseLife(player, handsanitizer) {
+        handsanitizer.die()
+        this.life++
+        if (this.life >= 3) {
+            player.clearTint().setAlpha(2)
+        }
+    }
+    
+
+}
